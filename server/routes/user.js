@@ -1,10 +1,14 @@
 const express = require( 'express' );
-const app = express();
-const User = require( '../models/user' );
 const bcrypt = require( 'bcrypt' );
+const User = require( '../models/user' );
+const app = express();
 const _ = require( 'underscore' );
+const { verifyToken, verifyAdminRole } = require( '../middlewares/authentication');
 
-app.get( '/user', function ( req, res ) {
+
+
+// Get user
+app.get( '/user', verifyToken, ( req, res ) => {
 
    let from = req.query.from || 0;
    from = Number( from );
@@ -36,7 +40,9 @@ app.get( '/user', function ( req, res ) {
 
 });
 
-app.post( '/user', function ( req, res ) {
+
+// Create user
+app.post( '/user', [ verifyToken, verifyAdminRole ], function ( req, res ) {
 
     let body = req.body;
 
@@ -64,7 +70,9 @@ app.post( '/user', function ( req, res ) {
     });
 });
 
-app.put( '/user/:id', function ( req, res ) {
+
+// Update user
+app.put( '/user/:id', [ verifyToken, verifyAdminRole ], function ( req, res ) {
 
     let id = req.params.id;
     let body = _.pick( req.body, ['name', 'email', 'img', 'role', 'status']) ;
@@ -87,12 +95,17 @@ app.put( '/user/:id', function ( req, res ) {
 
 });
 
-app.delete( '/user/:id', function ( req, res ) {
+
+// Delete user
+app.delete( '/user/:id', verifyToken, function ( req, res ) {
 
     let id = req.params.id;
     let changeStatus = { status: false };
 
+    // To remove completly the data of user
     // User.findByIdAndRemove( id, ( err, deletedUser ) => {
+
+    // To change the status to false of user
     User.findByIdAndUpdate( id, changeStatus, { new: true }, ( err, deletedUser ) => {
 
 
