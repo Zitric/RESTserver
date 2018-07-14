@@ -5,7 +5,6 @@
 process.env.PORT = process.env.PORT || 3000;
 
 
-
 // =============================
 // Enviroment
 // =============================
@@ -20,11 +19,13 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'dev';
 
 process.env.EXPIRATION_TOKEN = 60 * 60 * 24 * 30;
 
+
 // =============================
 // Seed of authentication
 // =============================
 
 process.env.SEED = process.env.SEED || 'This is the seed of development';
+
 
 // =============================
 // Data base
@@ -39,3 +40,13 @@ if ( process.env.NODE_ENV === 'dev') {
 }
 
 process.env.URLDB = urlDB;
+
+
+// =============================
+// Google client
+// =============================
+
+process.env.CLIENT_ID = process.env.CLIENT_ID || '1072945280741-9t198hv4eo6cdq4gm0n9qdf25cnp7d57.apps.googleusercontent.com';
+
+
+
