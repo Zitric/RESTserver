@@ -55,12 +55,8 @@ async function verify( token ) {
     });
     const payload = ticket.getPayload();
 
-    console.log(payload.name);
-    console.log(payload.email);
-    console.log(payload.picture);
-
     return {
-        nombre: payload.name,
+        name: payload.name,
         email: payload.email,
         img: payload.picture,
         google: true
@@ -69,17 +65,28 @@ async function verify( token ) {
 
 app.post( '/google', async ( req, res ) => {
 
+
     let token = req.body.idtoken;
+
 
     let googleUser = await verify( token )
         .catch( err => {
-           res.status( 403 ).json({
+           return res.status( 403 ).json({
                ok: false,
                error: err
            })
         });
 
+    // res.json({
+    //     user: googleUser
+    // });
+
+    // console.log('Token ', token);
+    //
     User.findOne({ email: googleUser.email}, ( err, userDB ) => {
+
+
+        console.log( ' => email of user', googleUser.email );
 
         if ( err ) {
             return res.status( 500 ).json({
@@ -87,17 +94,19 @@ app.post( '/google', async ( req, res ) => {
                 err
             });
         }
-
+        // If the user exist
         if ( userDB ) {
+            // If is not a google user
              if ( userDB.google === false ) {
                  return res.status( 400 ).json({
                      ok: false,
                      err: {
-                         message: 'Must use normal authentication'
+                         message: 'Must use commmon authentication'
                      }
-                 })
+                 });
              } else {
-                 let authentication = jwt.sing({
+                 // if is a google user, we must renovate the token
+                 let authentication = jwt.sign({
                      user: userDB
                  }, process.env.SEED, { expiresIn: process.env.EXPIRATION_TOKEN });
 
@@ -105,9 +114,11 @@ app.post( '/google', async ( req, res ) => {
                      ok: true,
                      user: userDB,
                      authentication
-                 })
+                 });
              }
-        } else {
+        }
+        else {
+            // the first time for this user
             let user = new User();
             user.name = googleUser.name;
             user.email = googleUser.email;
@@ -115,6 +126,10 @@ app.post( '/google', async ( req, res ) => {
             user.google = true;
             user.password = ':)';
 
+            console.log( ' => the new user of google', user );
+
+
+            // Saving the user at database
             user.save( ( err, userDB ) => {
 
                 if ( err ) {
@@ -126,7 +141,7 @@ app.post( '/google', async ( req, res ) => {
                     let authentication = jwt.sing({
                         user: userDB
                     }, process.env.SEED, { expiresIn: process.env.EXPIRATION_TOKEN });
-
+                    console.log( ' => saving the user' );
                     return res.json({
                         ok: true,
                         user: userDB,
