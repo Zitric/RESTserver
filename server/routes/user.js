@@ -1,9 +1,10 @@
 const express = require( 'express' );
 const bcrypt = require( 'bcrypt' );
 const User = require( '../models/user' );
-const app = express();
 const _ = require( 'underscore' );
 const { verifyToken, verifyAdminRole } = require( '../middlewares/authentication');
+
+const app = express();
 
 
 
@@ -22,7 +23,7 @@ app.get( '/user', verifyToken, ( req, res ) => {
        .exec( ( err, users ) => {
 
        if ( err ) {
-           return res.status( 400 ).json({
+           return res.status( 500 ).json({
                ok: false,
                err
            });
