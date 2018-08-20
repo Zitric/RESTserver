@@ -76,7 +76,7 @@ app.post( '/user', [ verifyToken, verifyAdminRole ], function ( req, res ) {
 app.put( '/user/:id', [ verifyToken, verifyAdminRole ], function ( req, res ) {
 
     let id = req.params.id;
-    let body = _.pick( req.body, ['name', 'email', 'img', 'role', 'status']) ;
+    let body = _.pick( req.body, ['name', 'email', 'img', 'role', 'status']);
 
     User.findByIdAndUpdate( id, body, { new: true, runValidators: true },
                             ( err, userBD ) => {
@@ -89,7 +89,7 @@ app.put( '/user/:id', [ verifyToken, verifyAdminRole ], function ( req, res ) {
         }
 
         res.json({
-           ok: true,
+            ok: true,
             user: userBD
         });
     });
